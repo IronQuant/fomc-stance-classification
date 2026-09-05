@@ -1,7 +1,7 @@
 # FOMC monetary policy stance classification
 
 Code for an MSc thesis on classifying the policy stance of Federal Open Market
-Committee (FOMC) sentences as hawkish, dovish or neutral.
+Committee (FOMC).
 
 The project rebuilds performance one capability at a time, from a rule-based
 dictionary up to a fine-tuned RoBERTa-large, and then asks two further
@@ -11,8 +11,6 @@ labels borrowed from other central banks stand in for an institution's own?
 Everything reported in the thesis can be reproduced from this repository.
 
 ## Setup
-
-
 ```bash
 # macOS / Linux
 python3.11 -m venv .venv
@@ -26,21 +24,25 @@ py -3.11 -m venv .venv
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
+
 The zero-shot LLM experiments need an Anthropic API key in the environment as
 `ANTHROPIC_API_KEY`. Nothing else does, so you can run the rest without one.
 
 ## Data
 
-No data files are committed. Every loader in `data/` downloads its corpus from
-the HuggingFace Hub on first use, so you need an internet connection the first
-time you run a notebook.
+No data is stored in this repository. The experiments download what they need
+when you run them, from HuggingFace, from the benchmark authors' GitHub, and for
+word2vec from gensim's vector store. You need an internet connection.
 
 Two datasets are used, both published by other authors.
 
 - **Trillion Dollar Words** (Shah et al., 2023) is the labelled benchmark.
   2,480 FOMC sentences with three published train/test partitions.
+- **Trillion Dollar Words** also supplies unlabelled FOMC text, roughly 165,000
+  sentences from the same communications. This is the FOMC adaptation pool.
 - **World Central Banks** (Shah et al., 2025) supplies labelled sentences from
   25 central banks, and the unlabelled text used for continued pretraining.
+  
 
 Both datasets are published by Shah et al. under a CC BY-NC 4.0 licence and are
 downloaded from their original sources at runtime. No data files are
@@ -52,12 +54,14 @@ attribution for replication.
 
 ## Where results go
 
-`config.py` writes to Google Drive if it finds it mounted, and otherwise to
-`results/`. Results accumulate in `results.csv`, one row per model, corpus
-and seed. Rerunning a notebook skips any row already present, so an interrupted
-run can be restarted without repeating finished work. Delete the rows or set
-`FORCE = True` to rerun something deliberately.
+Results go to Google Drive if it is mounted, and otherwise to `results/` inside
+the repository. On Colab the notebooks offer a Drive mount and you can decline
+it. Everything then lands in `results/` in the session filesystem, which works
+fine but is lost when the runtime disconnects.
 
+Main macro-F1 results saved in `results.csv`. 
+Rerunning a notebook skips any row already present, so an interrupted
+run can be restarted without repeating finished work. 
 Four result files are committed, so every number in the thesis can be checked
 without running anything, all under `results/`: `results.csv`, `grid.csv`,
 `idioms.csv` and `mlm_loss.csv`.
@@ -91,18 +95,13 @@ order.
 
 ## Hardware and runtime
 
-The encoder work was run on a single A100. On that hardware the model trains at
-roughly 105 sentences per second, so a fine-tuning run on the full 1,984
-training sentences takes a few minutes and a run on the 23,000-sentence
-cross-bank pool takes closer to forty. Continued pretraining is the long one, at
-roughly an hour per arm.
-
+The encoder work was run on a single NVIDIA A100.
 Everything runs on CPU too, and the baselines, bag-of-words, word2vec and the
-zero-shot LLM calls are comfortable there. The encoder experiments are not.
+zero-shot LLM calls are comfortable there. The encoder experiments would not appropriate for consumer hardware.
 
-Adapted encoder checkpoints are written to `results/models/` and are gitignored. Each is
-about 1.4GB, which is past what GitHub accepts, so they are not distributed.
-Rerunning `apt.ipynb` recreates them.
+Adapted encoder checkpoints are written to `results/models/`, or to Drive if it is
+mounted, and are gitignored. Each is about 1.4GB, which is past what GitHub
+accepts, so they are not distributed. Rerunning `apt.ipynb` recreates them.
 
 ## Licence
 
