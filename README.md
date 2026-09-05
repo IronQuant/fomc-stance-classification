@@ -47,15 +47,15 @@ attribution for replication.
 
 ## Where results go
 
-`config.py` writes to Google Drive if it finds it mounted, and otherwise to the
-repository root. Results accumulate in `results.csv`, one row per model, corpus
+`config.py` writes to Google Drive if it finds it mounted, and otherwise to
+`results/`. Results accumulate in `results.csv`, one row per model, corpus
 and seed. Rerunning a notebook skips any row already present, so an interrupted
 run can be restarted without repeating finished work. Delete the rows or set
 `FORCE = True` to rerun something deliberately.
 
 Four result files are committed, so every number in the thesis can be checked
-without running anything: `results.csv`, `grid.csv`, `idioms.csv` and
-`mlm_loss.csv`.
+without running anything, all under `results/`: `results.csv`, `grid.csv`,
+`idioms.csv` and `mlm_loss.csv`.
 
 ## What is where
 
@@ -95,7 +95,7 @@ roughly an hour per arm.
 Everything runs on CPU too, and the baselines, bag-of-words, word2vec and the
 zero-shot LLM calls are comfortable there. The encoder experiments are not.
 
-Adapted encoder checkpoints are written to `models/` and are gitignored. Each is
+Adapted encoder checkpoints are written to `results/models/` and are gitignored. Each is
 about 1.4GB, which is past what GitHub accepts, so they are not distributed.
 Rerunning `apt.ipynb` recreates them.
 

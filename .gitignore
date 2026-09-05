@@ -20,7 +20,7 @@ tokens.env
 Thumbs.db
 
 # adapted checkpoints land here when no Drive is mounted
-models/*/
+results/models/
 
 # figures are produced from the committed results files, not shipped
 figures/

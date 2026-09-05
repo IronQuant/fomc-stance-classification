@@ -14,7 +14,8 @@ for _cand in (Path("/content/drive/MyDrive/thesis"), Path("G:/My Drive/thesis"))
         RESULTS_DIR = _cand
         break
 else:
-    RESULTS_DIR = _ROOT
+    RESULTS_DIR = _ROOT / "results"
+    RESULTS_DIR.mkdir(exist_ok=True)
 
 
 # -----------------------------------------------------------------------------------
