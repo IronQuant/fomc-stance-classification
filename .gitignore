@@ -1,0 +1,26 @@
+.venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Jupyter / tooling
+.ipynb_checkpoints/
+.ruff_cache/
+saved_models/
+
+# Secrets: tokens.env lives on Drive only.
+# NOTE: .env is deliberately NOT ignored -- it holds PYTHONPATH=. and nothing else.
+tokens.env
+
+# Excel lock files, archives, OS cruft
+~$*.xls*
+*.zip
+.DS_Store
+Thumbs.db
+
+# adapted checkpoints land here when no Drive is mounted
+models/*/
+
+# figures are produced from the committed results files, not shipped
+figures/
