@@ -12,17 +12,20 @@ Everything reported in the thesis can be reproduced from this repository.
 
 ## Setup
 
-Python 3.11.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate      # Windows: .venv\Scripts\activate
+# macOS / Linux
+python3.11 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-`torch` is deliberately unpinned to a build. Pip installs a CPU wheel on
-Windows and a CUDA wheel on Colab, and the encoder experiments need the GPU one.
-
+```powershell
+# Windows (PowerShell)
+py -3.11 -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 The zero-shot LLM experiments need an Anthropic API key in the environment as
 `ANTHROPIC_API_KEY`. Nothing else does, so you can run the rest without one.
 
