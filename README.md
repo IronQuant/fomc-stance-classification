@@ -11,10 +11,12 @@ labels borrowed from other central banks stand in for an institution's own?
 Everything reported in the thesis can be reproduced from this repository.
 
 ## Setup
+
 Python 3.11.
+
 ```bash
 python -m venv .venv
-source .venv/bin/activate        
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
