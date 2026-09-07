@@ -59,9 +59,11 @@ def adapt(
     model = AutoModelForMaskedLM.from_pretrained(model_name).to(device)
 
     if verbose:
-        print(f"    tokenizing {len(sentences):,} sentences...", flush=True)
+        print(f"tokenizing {len(sentences):,} sentences...", flush=True)
 
     enc = tok(sentences, truncation=True, max_length=max_len)
+
+
     encoded = [
         {"input_ids": ids, "attention_mask": mask}
         for ids, mask in zip(enc["input_ids"], enc["attention_mask"])
@@ -83,7 +85,7 @@ def adapt(
 
     if verbose:
         print(
-            f"    training: {len(dl):,} batches/epoch x {epochs} epoch(s), "
+            f" training: {len(dl):,} batches/epoch x {epochs} epoch(s), "
             f"{total_steps:,} updates at effective batch {batch_size * accum_steps}",
             flush=True,
         )

@@ -23,6 +23,7 @@ def _load_model(model_name, device):
     Returns:
         The loaded model on the specified device.
     """
+    # num_labels=3 because of 3 classes, hawkish, dovish, neutral
     return AutoModelForSequenceClassification.from_pretrained(
         model_name, num_labels=3, torch_dtype=torch.float32
     ).to(device)
@@ -31,7 +32,6 @@ def _load_model(model_name, device):
 def _encode(tok, df, max_len):
     """
     Convert a frame of sentences/labels into a list of dicts
-    suitable for a HuggingFace DataLoader.
 
     Args:
         tok: The tokenizer to use.
@@ -73,7 +73,8 @@ def _evaluate(model, dl, device, class_w=None):
     Returns:
         A tuple (cross_entropy, accuracy, weighted_f1, macro_f1).
     """
-    model.eval()  # flip model to eval mode (no dropout, etc.)
+    # no dropout
+    model.eval()
 
     # ce_sum: total CE loss,
     # correct: number of correct predictions,
@@ -144,14 +145,19 @@ def _train_epoch(model, train_dl, opt, class_w, device):
         batch = {k: v.to(device) for k, v in batch.items()}
         opt.zero_grad()
         out = model(**batch)
-        # weighted CE from logits, not the model's built-in unweighted out.loss
         loss = F.cross_entropy(out.logits, batch["labels"], weight=class_w)
+        # loss.backward() computes the gradient
         loss.backward()
+        # opt.step() updates the model parameters based on the computed gradients
         opt.step()
 
 
 def _score(model, tok, df, max_len, batch_size, class_w, device, prefix):
-    """Score a frame with the current weights, keys prefixed e.g. test_macro_f1."""
+    """Score a frame with the current weights, keys prefixed e.g. test_macro_f1.
+    
+    Create the torch DataLoader for the test set andd score the model on it.
+
+    """
     dl = DataLoader(
         _encode(tok, df, max_len),
         batch_size=batch_size,
@@ -218,6 +224,7 @@ def finetune(
     """
 
     # Load the tokenizer from model_name
+    # Specific way a model tokenizes the text, so like WordPiece for BERT
     tok = AutoTokenizer.from_pretrained(model_name)
 
     # set seeds for reproducibility
@@ -225,12 +232,14 @@ def finetune(
     np.random.seed(seed)
 
     # load the actual model
+    # Load BERT specifically form the name
+    # send it to the specified device, so on NVIDIA GPU it would be cuda
     model = _load_model(model_name, device)
 
-    # create the training and validation DataLoaders
+    # create the training and validation DataLoaders, PyTorch!
     train_dl, val_dl = _make_loaders(tok, train_df, max_len, batch_size, val_frac)
 
-    # setup optimizer qand class weights for weighted CE loss
+    # setup optimizer and class weights for weighted CE loss
     opt = torch.optim.AdamW(model.parameters(), lr=lr)
     class_w = _class_weights(train_df, device)
 
@@ -239,7 +248,9 @@ def finetune(
     n_epochs = 0
     for epoch in range(max_epochs):
         if es_count >= patience:
+            # stop if early stopping count exceeds patience
             break
+            
         es_count += 1
         n_epochs = epoch + 1
         t0 = time.perf_counter()
@@ -249,8 +260,6 @@ def finetune(
 
         # validate
         ce, acc, f1, mf1 = _evaluate(model, val_dl, device, class_w)
-        # strict > (min-delta 0): equal mF1 must NOT reset, or a frozen run (e.g.
-        # lr=1e-7 stuck at one value) would never stop and hit max_epochs.
         if mf1 > best_macro:
             best_macro, es_count = mf1, 0
             best_metrics = (ce, acc, f1, mf1)

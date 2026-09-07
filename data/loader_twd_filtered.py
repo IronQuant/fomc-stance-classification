@@ -21,8 +21,9 @@ TARBALL = (
     "https://github.com/gtfintechlab/fomc-hawkish-dovish/archive/refs/heads/main.tar.gz"
 )
 PREFIX = "fomc-hawkish-dovish-main/data/filtered_data/"
-# speech_labeled holds the 201 title-filtered speeches, matching the paper.
-# the _labeled dirs also carry RoBERTa pseudo-labels; only `sentence` is read.
+
+# speech_labeled holds the 201 title-filtered speeches, matching the paper
+
 SUBDIRS = {
     "meeting_minutes": "meeting_minutes",
     "press_conference": "press_conference",

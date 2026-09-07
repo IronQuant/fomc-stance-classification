@@ -74,8 +74,8 @@ def fetch_splits(verbose=True):
 
 def load_splits(dataset="benchmark", seed=944601, cutoff=2019):
     """
-    Load the labelled benchmark from data/twd/labelled/sentences.csv.
-
+    Load the labelled TWD benchmark or chrono split.
+    
     Args:
         dataset:
             "benchmark" gives the published train/test split for one seed.

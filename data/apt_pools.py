@@ -53,7 +53,7 @@ def build_eval_set(verbose=True):
 
 def build_pools(verbose=True):
     """
-    Return (fomc, global) pools as DataFrames.
+    Return (fomc, glob) pools as DataFrames.
 
     We download and clean the TWD and WCB corpora
     We deduplicate across corpora, keeping duplicates in TWD
@@ -64,7 +64,7 @@ def build_pools(verbose=True):
 
     Returns:
         fomc: FOMC sentences only, from the TWD corpus
-        global: fomc plus the non-US WCB sentences, concatenated
+        glob: fomc plus the non-US WCB sentences, concatenated
 
     """
     # each loader returns its own corpus already normalised and deduplicated
